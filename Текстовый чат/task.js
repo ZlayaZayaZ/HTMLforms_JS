@@ -1,10 +1,11 @@
 const openChat = document.querySelector('.chat-widget__side-text')
 const container = document.querySelector( '.chat-widget__messages-container' )
 const input = document.getElementById('chat-widget__input')
+const messages = document.querySelector( '.chat-widget__messages' );
 
-openChat.onclick = () => {
-    const parent = openChat.closest('.chat-widget')
-    parent.classList.toggle('chat-widget_active')
+function arrayRandElement(arr) {
+    let rand = Math.floor(Math.random() * arr.length);
+    return arr[rand];
 }
 
 function newMessage(text, authorClass) {
@@ -21,14 +22,18 @@ function newMessage(text, authorClass) {
     container.scrollTop = container.scrollHeight
 }
 
-const messages = document.querySelector( '.chat-widget__messages' );
 newMessage('Добрый день, мы ещё не проснулись. Позвоните через 10 лет', 'message')
+
+openChat.onclick = () => {
+    const parent = openChat.closest('.chat-widget')
+    parent.classList.toggle('chat-widget_active')
+}
 
 input.addEventListener('keydown', (e) => {
     let idleTime = 0;
     if (e.key === 'Enter') {
-        if (input.value != "") {
-            newMessage(input.value, 'message message_client')
+        if (input.value.trim() != "") {
+            newMessage(input.value.trim(), 'message message_client')
             input.value = ""
             newMessage(arrayRandElement(listAnswer), 'message')
         }
@@ -53,7 +58,4 @@ const listAnswer = ['К сожалению все операторы сейча�
 const listQuestion = ['Молчание затянулось. Вас долго ждать?',
                     'Где ваша совесть?']
 
-function arrayRandElement(arr) {
-    let rand = Math.floor(Math.random() * arr.length);
-    return arr[rand];
-}
+
