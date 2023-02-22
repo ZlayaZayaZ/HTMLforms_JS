@@ -1,78 +1,97 @@
-const elements = document.querySelectorAll('.interests.interests_active');
+const elements = document.querySelectorAll('.interest__check');
 
-for (let elem of elements) {
-    const childrens = elem.querySelectorAll('input')
-    const childrensArr = Array.from(childrens)
-    const parent = elem.previousElementSibling.querySelector('input')
+for (let elem of elements) { 
+  elem.onchange = () => {
+    parentChild (elem)
+    childParent (elem)
+  } 
+}
 
-    parent.onchange = () => {
-      if (parent.checked == true) {
-        for (let child of childrens) {
-          child.checked = true
-        }
-      }
-      else {
-        for (let child of childrens) {
-          child.checked = false
-        }
-      }
+function parentChild (elem) {
+  let listChild = examinationChild (elem)
+  if (listChild) {
+    checkedChild (elem, listChild)
+    for (let child of listChild) {
+      parentChild (child)
     }
-
-  for (let child of childrens) { 
-    
-    child.onchange = () => {
-      while (examinationParent (child)) {
-        let siblingsArr, parent = createArr(child)
-        examination(siblingsArr, parent)
-        child = parent
-      }
-    } 
   }
+}
+
+function childParent (elem) {
+  let childrens = listChild (elem)
+  let parent = examinationParent (elem)
+  if (parent) {
+    checkedParent (childrens, parent)
+    childParent(parent)
+  }
+}
   
+function examinationChild (elem) {
+  let li = elem.closest('li')
+  let ul = li.querySelector('ul')
+  if (ul) {
+    let childrens = ul.querySelectorAll('.interest__check')
+    return childrens
+  }
+  else {return false}
+}
+
 function examinationParent (child) {
-  const ul = child.closest('ul')
-  const parent = ul.previousElementSibling.querySelector('input')
-  return parent
+  let ul = child.closest('ul')
+  let siblingUl = ul.previousElementSibling
+  if (siblingUl) {
+    let parent = siblingUl.querySelector('input')
+    return parent
+  }
+  else {return false}
 }
 
-function createArr (child) {
-  let siblings = []
-  let parent = examinationParent (child)
-    // childrensArr2.push(child)
-    let li = child.closest('li')
-    let next = li.nextElementSibling
-    while (next != null) {
-      let input = next.querySelector('input')
-      siblings.push(input)
-      li = input.closest('li')
-      next = li.nextElementSibling
-    }
-    let previous = li.previousElementSibling
-    while (previous != null) {
-      let input = previous.querySelector('input')
-      siblings.push(input)
-      li = input.closest('li')
-      previous = li.previousElementSibling
-    }
-    let siblingsArr = Array.from(siblings)
-    return siblingsArr, parent
+function listChild(child) {
+  let ul = child.closest('ul')
+  let listChild = ul.querySelectorAll('input')
+  return listChild
 }
 
-function examination (childrensArr, parent) {
-  if (childrensArr.some(isBigEnough) && (!childrensArr.every(isBigEnough))) {
+function checkedChild (parent, childrens) {
+  if (parent.checked == true) {
+    for (let child of childrens) {
+      child.checked = true
+    }
+  }
+  else if (parent.checked == false) {
+    for (let child of childrens) {
+      child.checked = false
+    }
+  }
+}
+
+function checkedParent (childrens, parent) { 
+  let childrensArr = Array.from(childrens)
+  
+  if (childrensArr.some(checked) && (!childrensArr.every(checked))) {
     parent.indeterminate = true
   }
-  else if (childrensArr.every(isBigEnough)) {
+  else if (childrensArr.some(indeterminate)) {
+    parent.indeterminate = true
+  }
+  else if (childrensArr.every(checked)) {
     parent.indeterminate = false
     parent.checked = true
   }
-  else {
+  else if (!childrensArr.every(checked) || !childrensArr.every(indeterminate)) {
+    parent.indeterminate = false
+    parent.checked = false
+  }
+  else if (childrensArr.every(!indeterminate) && (childrensArr.every(!checked))) {
     parent.indeterminate = false
     parent.checked = false
   }
 }
+
+function checked(elem) {
+  return elem.checked
 }
 
-function isBigEnough(element) {
-  return element.checked
+function indeterminate(elem) {
+  return elem.indeterminate
 }
